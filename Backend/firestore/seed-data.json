@@ -1,0 +1,71 @@
+{
+  "users": [
+    { "id": "user_1", "name": "Alice", "email": "alice@example.com" },
+    { "id": "user_2", "name": "Bob", "email": "bob@example.com" }
+  ],
+  "profiles": [
+    { "id": "profile_1", "userId": "user_1", "bio": "First user" }
+  ],
+  "contacts": [
+    { "id": "contact_1", "userId": "user_1", "name": "Mom", "phone": "+123456789" }
+  ],
+  "alerts": [
+    { "id": "alert_1", "userId": "user_1", "message": "Test alert", "createdAt": 0 }
+  ],
+  "settings": [
+    { "id": "user_1", "notifications": true }
+  ]
+}
+{
+  "users": {
+    "demo-user-id": {
+      "username": "demo",
+      "createdAt": "2026-06-16T00:00:00.000Z",
+      "updatedAt": "2026-06-16T00:00:00.000Z",
+      "profile": {
+        "main": {
+          "guardianName": "James Johnson",
+          "elderlyName": "Margaret Johnson",
+          "age": "72",
+          "disabilities": "Diabetes, blood pressure medication",
+          "updatedAt": "2026-06-16T00:00:00.000Z"
+        }
+      },
+      "emergencyContacts": {
+        "c1": {
+          "name": "Dr. Sarah Williams",
+          "phone": "+12349871234",
+          "relationship": "Primary Doctor",
+          "createdAt": "2026-06-16T00:00:00.000Z",
+          "updatedAt": "2026-06-16T00:00:00.000Z"
+        },
+        "c2": {
+          "name": "Mary Johnson",
+          "phone": "+12348762210",
+          "relationship": "Daughter",
+          "createdAt": "2026-06-16T00:00:00.000Z",
+          "updatedAt": "2026-06-16T00:00:00.000Z"
+        }
+      },
+      "settings": {
+        "main": {
+          "fallDetected": true,
+          "inactivity": true,
+          "wandering": true,
+          "updatedAt": "2026-06-16T00:00:00.000Z"
+        }
+      },
+      "alerts": {
+        "1": {
+          "type": "Inactivity Alert",
+          "status": "pending",
+          "severity": "medium",
+          "occurredAt": "2026-04-25T23:02:00.000Z",
+          "incidentDetail": "Inactivity detected in 2+ hours.",
+          "createdAt": "2026-06-16T00:00:00.000Z",
+          "updatedAt": "2026-06-16T00:00:00.000Z"
+        }
+      }
+    }
+  }
+}
