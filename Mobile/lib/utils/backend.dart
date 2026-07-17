@@ -1,20 +1,24 @@
 class BackendConfig {
-  // Override at build time with --dart-define=API_BASE=https://... or emulator URL
   static const String apiBase = String.fromEnvironment(
     'API_BASE',
-    defaultValue: 'https://us-central1-your-project.cloudfunctions.net/api',
+    defaultValue:
+        'https://us-central1-safeguard-aab9a.cloudfunctions.net/api',
   );
 }
 
 class EmulatorConfig {
-  static const useEmulator =
+  static const bool useEmulator =
       bool.fromEnvironment('USE_EMULATOR', defaultValue: false);
-  static const host =
+
+  static const String host =
       String.fromEnvironment('EMULATOR_HOST', defaultValue: '10.0.2.2');
-  static const firestorePort =
+
+  static const int firestorePort =
       int.fromEnvironment('EMULATOR_FIRESTORE_PORT', defaultValue: 8081);
-  static const authPort =
+
+  static const int authPort =
       int.fromEnvironment('EMULATOR_AUTH_PORT', defaultValue: 9099);
-  static const functionsPort =
+
+  static const int functionsPort =
       int.fromEnvironment('EMULATOR_FUNCTIONS_PORT', defaultValue: 5001);
 }
