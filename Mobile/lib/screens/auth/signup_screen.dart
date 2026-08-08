@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../utils/constants.dart';
 import '../../widgets/input_field.dart';
 import '../../widgets/reusable_button.dart';
@@ -7,10 +6,11 @@ import '../../widgets/reusable_button.dart';
 class SignupCredentials {
   const SignupCredentials({
     required this.username,
+    required this.email,
     required this.password,
   });
-
   final String username;
+  final String email;
   final String password;
 }
 
@@ -20,7 +20,6 @@ class SignupScreen extends StatefulWidget {
     required this.onBackToLogin,
     required this.onSubmit,
   });
-
   final VoidCallback onBackToLogin;
   final ValueChanged<SignupCredentials> onSubmit;
 
@@ -31,11 +30,13 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _username = TextEditingController();
+  final _email = TextEditingController();
   final _password = TextEditingController();
 
   @override
   void dispose() {
     _username.dispose();
+    _email.dispose();
     _password.dispose();
     super.dispose();
   }
@@ -61,13 +62,19 @@ class _SignupScreenState extends State<SignupScreen> {
               Text('Sign Up', style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 6),
               const Text(
-                'Create a username and password',
+                'Create an account',
                 style: TextStyle(color: AppColors.muted),
               ),
               const SizedBox(height: 18),
               InputField(
                   controller: _username,
                   label: 'Username',
+                  requiredField: true),
+              const SizedBox(height: 10),
+              InputField(
+                  controller: _email,
+                  label: 'Email',
+                  keyboardType: TextInputType.emailAddress,
                   requiredField: true),
               const SizedBox(height: 10),
               InputField(
@@ -88,12 +95,11 @@ class _SignupScreenState extends State<SignupScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
-
     final data = SignupCredentials(
       username: _username.text.trim(),
+      email: _email.text.trim(),
       password: _password.text,
     );
-
     widget.onSubmit(data);
   }
 }

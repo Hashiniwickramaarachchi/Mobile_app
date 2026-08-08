@@ -53,6 +53,7 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   static const _usernameKey = 'signup_username';
+  static const _emailKey = 'signup_email';
   static const _passwordKey = 'signup_password';
 
   bool _isAuthenticated = false;
@@ -306,83 +307,97 @@ class _AppShellState extends State<AppShell> {
   }
 
   Future<void> _loadSavedCredentials() async {
-    final prefs = await SharedPreferences.getInstance();
-    final username = prefs.getString(_usernameKey);
-    final password = prefs.getString(_passwordKey);
+  final prefs = await SharedPreferences.getInstance();
+  final username = prefs.getString(_usernameKey);
+  final email = prefs.getString(_emailKey);
+  final password = prefs.getString(_passwordKey);
 
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      if (username != null &&
-          username.trim().isNotEmpty &&
-          password != null &&
-          password.isNotEmpty) {
-        _credentials = SignupCredentials(
-          username: username,
-          password: password,
-        );
-      }
-      _isLoadingCredentials = false;
-    });
+  if (!mounted) {
+    return;
   }
+
+  setState(() {
+    if (username != null &&
+        username.trim().isNotEmpty &&
+        email != null &&
+        email.trim().isNotEmpty &&
+        password != null &&
+        password.isNotEmpty) {
+      _credentials = SignupCredentials(
+        username: username,
+        email: email,
+        password: password,
+      );
+    }
+    _isLoadingCredentials = false;
+  });
+}
 
   Future<void> _saveSignupCredentials(SignupCredentials credentials) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_usernameKey, credentials.username);
-    await prefs.setString(_passwordKey, credentials.password);
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString(_usernameKey, credentials.username);
+  await prefs.setString(_emailKey, credentials.email);
+  await prefs.setString(_passwordKey, credentials.password);
 
-    try {
-      final auth = AuthService();
-      await auth.signUp(
-          email: credentials.username, password: credentials.password);
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _loginError = 'Could not create account: ${e.toString()}';
-      });
-      return;
-    }
-
+  try {
+    final auth = AuthService();
+    await auth.signUp(
+        email: credentials.email,
+        username: credentials.username,
+        password: credentials.password);
+  } catch (e) {
     if (!mounted) return;
-
     setState(() {
-      _credentials = credentials;
-      _signupSuccess = 'Account created. Please sign in.';
+      _loginError = 'Could not create account: ${e.toString()}';
+    });
+    return;
+  }
+
+  if (!mounted) return;
+
+  setState(() {
+    _credentials = credentials;
+    _signupSuccess = 'Account created. Please sign in.';
+    _loginError = '';
+    _showSignup = false;
+  });
+}
+
+ Future<void> _signIn(LoginCredentials input) async {
+  try {
+    final auth = AuthService();
+    final user =
+        await auth.signIn(username: input.username, password: input.password);
+    print('✅ Sign in successful: ${user?.uid}');
+    if (user == null) throw Exception('No user returned');
+    
+    // TODO: Fix PigeonService cast error later
+    // final pigeon = await PigeonService().getUserDetails(user.uid);
+    // print('✅ Pigeon response: $pigeon');
+    
+    if (!mounted) return;
+    setState(() {
+      _isAuthenticated = true;
       _loginError = '';
-      _showSignup = false;
+      _signupSuccess = '';
+    });
+    _loadAlertsFromBackend();
+  } on FirebaseAuthException catch (e) {
+    print('❌ Firebase Auth error: ${e.message}');
+    if (!mounted) return;
+    setState(() {
+      _loginError = e.message ?? 'Authentication failed.';
+      _signupSuccess = '';
+    });
+  } catch (e) {
+    print('❌ General error: $e');
+    if (!mounted) return;
+    setState(() {
+      _loginError = 'Authentication failed: ${e.toString()}';
+      _signupSuccess = '';
     });
   }
-
-  Future<void> _signIn(LoginCredentials input) async {
-    try {
-      final auth = AuthService();
-      final user =
-          await auth.signIn(email: input.username, password: input.password);
-      if (user == null) throw Exception('No user returned');
-      if (!mounted) return;
-      setState(() {
-        _isAuthenticated = true;
-        _loginError = '';
-        _signupSuccess = '';
-      });
-      // reload alerts for the signed-in user
-      _loadAlertsFromBackend();
-    } on FirebaseAuthException catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _loginError = e.message ?? 'Authentication failed.';
-        _signupSuccess = '';
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _loginError = 'Authentication failed.';
-        _signupSuccess = '';
-      });
-    }
-  }
+}
 
   void _signOut() {
     final auth = AuthService();
